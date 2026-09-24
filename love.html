@@ -1,41 +1,175 @@
-<!--Disclaimer: Information gathered from the form is not sent anywhere. This is entirely an HTML and CSS pen for my personal practicing. Hope to be advanced enough to do that soon.-->
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
-  <title>Love Letter!</title>
-  <link rel="stylesheet" href="love letter.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Love Letter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="love%20letter.css">
 </head>
 
 <body>
-  <div class = "wrap">
-    <h1>Love Letter</h1>
-    <div class = "postcard">
+  <div class="sky" id="sky" aria-hidden="true"></div>
 
-      <div class = "letter">
-        <form action="#" method="post" class="message_form">
-          <p class = "push">Dear </p><input type = "text" id = "recipient" name = "recipient_name" placeholder = "Verlin Tio Yunus" class = "push"><p> ,</p><br>
-          <label for = "message">Message</label><br>
-          <textarea id = "message" name = "message_to_recipient" placeholder = "Hi cantikk. I wanna say sorry for not being able with you, yesterday night. Falling in love with you has been the best thing for me in this life. I still wonder how such a beautiful, loving, and cheerful girl can love someone like me. I promise to always be there for you, to keep you happy and smiling, and to never stop loving you"></textarea><br>
-          <p>Yours Lovingly, </p><br>
-          <input type = "text" id = "sender_name" name = "sender" placeholder = "Ryan Justin Gowanto">
-        </form>
-      </div>
+  <main class="stage" id="stage">
+    <h1 class="title">Love Letter</h1>
 
-      <div class = "address">
-        <img src = "http://i44.photobucket.com/albums/f9/dandee114/stamp_zpsvbuxiwih.png" class = "mail_stamp">
-        <form action="#" method="post" class="message_form">
-        <input type = "email" id = "recipient_email" name = "recipient_email" placeholder = "verlintio17@gmail.com">
-        </form>
-        <p id = "address">Your heart<br>
-          Lovely Heart<br>
-        </p>
+    <!-- Envelope parts are siblings of the letter so the letter can slide between them -->
+    <div class="env env-back" aria-hidden="true"></div>
+
+    <article class="letter" id="letter" aria-live="polite">
+      <div class="stamp" aria-hidden="true">
+        <svg viewBox="0 0 32 29"><path d="M16 29 2.7 15.8A8.4 8.4 0 0 1 16 4.4a8.4 8.4 0 0 1 13.3 11.4Z"/></svg>
+        <span>LOVE</span>
       </div>
-      
+      <p class="greeting">Dear <span id="recipient"></span>,</p>
+      <p class="message"><span id="message"></span><span class="caret" id="caret"></span></p>
+      <div class="closing">
+        <p>Yours lovingly,</p>
+        <p class="signature" id="signature"></p>
+      </div>
+      <p class="address" id="address"></p>
+    </article>
+
+    <div class="env env-pocket" aria-hidden="true">
+      <span class="to">for you &hearts;</span>
     </div>
-  </div>
-  
-</body>
+    <div class="env env-flap" aria-hidden="true"></div>
+    <button class="seal" id="seal" aria-label="Open the letter">
+      <svg viewBox="0 0 32 29" aria-hidden="true"><path d="M16 29 2.7 15.8A8.4 8.4 0 0 1 16 4.4a8.4 8.4 0 0 1 13.3 11.4Z"/></svg>
+    </button>
 
+    <p class="hint" id="hint">Tap the seal to open</p>
+    <button class="replay" id="replay">Read it again &hearts;</button>
+  </main>
+
+  <script>
+    // ---- Edit the letter here ----
+    const LETTER = {
+      to: "you",
+      message: "Hi cantikk. I wanna say sorry for not being able to be with you yesterday night. Falling in love with you has been the best thing for me in this life. I still wonder how such a beautiful, loving, and cheerful girl can love someone like me. I promise to always be there for you, to keep you happy and smiling, and to never stop loving you.",
+      from: "Ryan Justin Gowanto",
+      address: "Your heart · Lovely Heart"
+    };
+
+    const $ = id => document.getElementById(id);
+    const stage = $("stage"), letter = $("letter"), msg = $("message");
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const HEART = '<svg viewBox="0 0 32 29"><path d="M16 29 2.7 15.8A8.4 8.4 0 0 1 16 4.4a8.4 8.4 0 0 1 13.3 11.4Z"/></svg>';
+
+    $("recipient").textContent = LETTER.to;
+    $("signature").textContent = LETTER.from;
+    $("address").textContent = LETTER.address;
+
+    // Floating hearts in the background
+    const sky = $("sky");
+    function floatHeart() {
+      const h = document.createElement("span");
+      h.className = "float-heart";
+      h.innerHTML = HEART;
+      const size = 10 + Math.random() * 26;
+      h.style.cssText = `left:${Math.random() * 100}vw;width:${size}px;` +
+        `--dur:${9 + Math.random() * 9}s;--sway:${(Math.random() * 80 - 40).toFixed(0)}px;` +
+        `opacity:${(0.15 + Math.random() * 0.4).toFixed(2)}`;
+      sky.appendChild(h);
+      h.addEventListener("animationend", () => h.remove());
+    }
+    if (!reduced) {
+      for (let i = 0; i < 10; i++) setTimeout(floatHeart, i * 400);
+      setInterval(floatHeart, 900);
+    }
+
+    // Burst of hearts from a point
+    function burst(x, y, count = 18) {
+      if (reduced) return;
+      for (let i = 0; i < count; i++) {
+        const h = document.createElement("span");
+        h.className = "burst-heart";
+        h.innerHTML = HEART;
+        h.style.left = x + "px";
+        h.style.top = y + "px";
+        document.body.appendChild(h);
+        const a = (Math.PI * 2 * i) / count + Math.random() * 0.4;
+        const d = 70 + Math.random() * 110;
+        h.animate([
+          { transform: "translate(-50%,-50%) scale(.2) rotate(0deg)", opacity: 1 },
+          { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d - 40}px)) scale(${0.6 + Math.random() * 0.8}) rotate(${Math.random() * 90 - 45}deg)`, opacity: 0 }
+        ], { duration: 1100 + Math.random() * 500, easing: "cubic-bezier(.15,.7,.3,1)" }).onfinish = () => h.remove();
+      }
+    }
+
+    // Typewriter
+    let typing = null;
+    function type(text, done) {
+      let i = 0;
+      const step = () => {
+        msg.textContent = text.slice(0, ++i);
+        if (i >= text.length) return finish();
+        const ch = text[i - 1];
+        const delay = ch === "." ? 380 : ch === "," ? 180 : 24 + Math.random() * 30;
+        typing = setTimeout(step, delay);
+      };
+      const finish = () => {
+        clearTimeout(typing);
+        typing = null;
+        msg.textContent = text;
+        letter.removeEventListener("click", finish);
+        done();
+      };
+      letter.addEventListener("click", finish); // tap to skip
+      step();
+    }
+
+    // Open sequence
+    const timers = [];
+    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+    let opened = false;
+
+    function open() {
+      if (opened) return;
+      opened = true;
+      const r = $("seal").getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2);
+
+      if (reduced) {
+        stage.classList.add("s-seal", "s-flap", "s-behind", "s-out", "s-read", "s-text", "s-typed", "s-signed", "s-done");
+        msg.textContent = LETTER.message;
+        return;
+      }
+      stage.classList.add("s-seal");
+      at(350, () => stage.classList.add("s-flap"));
+      at(800, () => stage.classList.add("s-behind"));
+      at(900, () => stage.classList.add("s-out"));
+      at(1900, () => stage.classList.add("s-read"));
+      at(2900, () => {
+        stage.classList.add("s-text");
+        type(LETTER.message, () => {
+          stage.classList.add("s-typed");
+          at(300, () => stage.classList.add("s-signed"));
+          at(1900, () => {
+            const s = $("signature").getBoundingClientRect();
+            burst(s.left + s.width / 2, s.top + s.height / 2, 14);
+            stage.classList.add("s-done");
+          });
+        });
+      });
+    }
+
+    function reset() {
+      timers.splice(0).forEach(clearTimeout);
+      clearTimeout(typing);
+      msg.textContent = "";
+      stage.className = "stage";
+      opened = false;
+    }
+
+    $("seal").addEventListener("click", open);
+    $("replay").addEventListener("click", () => {
+      reset();
+      setTimeout(open, 900);
+    });
+  </script>
+</body>
 </html>
