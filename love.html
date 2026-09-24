@@ -34,7 +34,7 @@
     </article>
 
     <div class="env env-pocket" aria-hidden="true">
-      <span class="to">for <span id="pocket-name"></span> &hearts;</span>
+      <span class="to">for you &hearts;</span>
     </div>
     <div class="env env-flap" aria-hidden="true"></div>
     <button class="seal" id="seal" aria-label="Open the letter">
@@ -48,7 +48,7 @@
   <script>
     // ---- Edit the letter here ----
     const LETTER = {
-      to: "Verlin Tio Yunus",
+      to: "Tio Yunus",
       message: "Hi cantikk. I wanna say sorry for not being able to be with you yesterday night. Falling in love with you has been the best thing for me in this life. I still wonder how such a beautiful, loving, and cheerful girl can love someone like me. I promise to always be there for you, to keep you happy and smiling, and to never stop loving you.",
       from: "Ryan Justin Gowanto",
       address: "Your heart · Lovely Heart"
@@ -60,7 +60,6 @@
     const HEART = '<svg viewBox="0 0 32 29"><path d="M16 29 2.7 15.8A8.4 8.4 0 0 1 16 4.4a8.4 8.4 0 0 1 13.3 11.4Z"/></svg>';
 
     $("recipient").textContent = LETTER.to;
-    $("pocket-name").textContent = LETTER.to.split(" ")[0];
     $("signature").textContent = LETTER.from;
     $("address").textContent = LETTER.address;
 
